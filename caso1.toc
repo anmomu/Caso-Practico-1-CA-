@@ -2,6 +2,6 @@
 \contentsline {section}{\numberline {1}Descripci\IeC {\'o}n}{2}
 \contentsline {subsection}{\numberline {1.1}Apartado a)}{3}
 \contentsline {subsubsection}{\numberline {1.1.1}Soluci\IeC {\'o}n}{3}
-\contentsline {subsection}{\numberline {1.2}Apartado b)}{6}
-\contentsline {subsubsection}{\numberline {1.2.1}Soluci\IeC {\'o}n}{6}
-\contentsline {section}{Referencias}{8}
+\contentsline {subsection}{\numberline {1.2}Apartado b)}{7}
+\contentsline {subsubsection}{\numberline {1.2.1}Soluci\IeC {\'o}n}{7}
+\contentsline {section}{Referencias}{9}
