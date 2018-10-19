@@ -96,7 +96,7 @@ A continuación, vamos a calcular las diferentes expresiones desde dentro hacia 
 
 Por lo tanto, tenemos que cada fallo de lectura de datos supone un extra de $24+2=26$ ciclos. Como la probabilidad de que se produzca un fallo de este tipo es e $1-0.97=0.03$, tenemos que multiplicar los ciclos por esta probabilidad. Además, hay que tener en cuenta que el porcentaje de cargas/almacenamientos es del 50\%, del cual el 70\% son de lectura a datos privados. En consecuencia, tenemos que ponderar lo anterior por $0.5\cdot 0.7=0.35$, que será el porcentaje de instrucciones de este tipo que se ejecuten en el procesador.\\
 
-Ciclos:
+Ciclos en caso de fallo:
 \begin{itemize}
 \item 24 ciclos para llevar la dirección a memoria, que esta responda y traer l primera mitad del bloque.
 \item 2 ciclos para traer la segunda mitad del bloque a caché.
@@ -113,7 +113,7 @@ Resumiendo todo lo anterior en una ecuación, quedaría lo siguiente:
 CPI_{lec.priv}&=0.35\cdot (0.03\cdot (26))=0.273\text{ CPI}
 \end{align*}
 
-En cuanto a la escritura de datos privados, hay que tener en cuenta que tenemos una política de escritura inmediata y carga en escritura (una combinación que no es muy usual). Por lo tanto, cada vez que ocurra un fallo, habrá que leer de memoria el bloque que se quiere escribir y traerlo a caché. Una vez que se haya hecho esto, habrá que escribir tanto en caché como en memoria principal dicho bloque (por la escritura inmediata). A continuación, describiremos la secuencia de acontecimientos: cuando ocurre un fallo en cache, tenemos que traer el bloque que queremos escribir a caché, como hemos dicho anteriormente. Esto requiere 26 ciclos de procesador, que ya calculamos previamente cuando analizamos la lectura de datos privados. Una vez leído el bloque, toca escribir en caché y en memoria (\textit{escritura inmediata}). La escritura en caché lleva 1 ciclo de procesador. Tras esto, toca contar los ciclos que se tarda en escribir en memoria. Como en \textit{escritura inmediata} se permite el envío de la palabra sólo, se consumirán dos ciclos de procesador en el proceso. Y ya está, según el enunciado no parece haber ninguna otra penalización en el proceso de escritura.\\
+En cuanto a la escritura de datos privados, hay que tener en cuenta que tenemos una política de escritura inmediata y carga en escritura (una combinación que no es muy usual). Por lo tanto, cuando haya un acierto, hay que escribir la palabra en memoria. Y cada vez que ocurra un fallo, habrá que leer de memoria el bloque que se quiere escribir y traerlo a caché. Una vez que se haya hecho esto, habrá que escribir tanto en caché como en memoria principal dicho bloque (por la escritura inmediata). A continuación, describiremos la secuencia de acontecimientos: cuando ocurre un fallo en cache, tenemos que traer el bloque que queremos escribir a caché, como hemos dicho anteriormente. Esto requiere 26 ciclos de procesador, que ya calculamos previamente cuando analizamos la lectura de datos privados. Una vez leído el bloque, toca escribir en caché y en memoria (\textit{escritura inmediata}). Como en \textit{escritura inmediata} se permite el envío de la palabra sólo, se consumirán dos ciclos de procesador en el proceso de escritura en memoria. Y ya está, según el enunciado no parece haber ninguna otra penalización en el proceso de escritura.\\
 
 Ciclos en caso de acierto:
 \begin{itemize}
@@ -133,7 +133,7 @@ Porcentajes:
 \item 0.1 del porcentaje de instrucciones de este tipo en el global.
 \end{itemize}
 
-Resumiendo, para la escritura de datos privados en caso de fallo tenemos una penalización de $7.5+1=8.5$ ciclos. Por último, y al igual que en el caso anterior, tenemos que ponderar los ciclos por la tasa de fallo y por el porcentaje de dicha instrucción en el global. La ecuación que resulta de todo lo anterior sería la siguiente:
+La ecuación que resulta de todo lo anterior sería la siguiente:
 \begin{align*}
 CPI_{esc.priv}&=0.1\cdot ((0.97\cdot (2))+(0.03\cdot (28)))=0.278\text{ CPI}
 \end{align*}
@@ -143,9 +143,9 @@ Sustituyendo los valores recién obtenidos en $(4)$, tenemos:
 CPI_{privados}=0.273+0.278=0.551 \text{ CPI}
 \end{align*}
 
-El siguiente paso es repetir el proceso anterior, pero con los datos compartidos. La lectura de este tipo de datos no tiene mucha complicación, ya que, según el enunciado, se lleva a cabo siempre desde memoria principal\footnote{\textit{``Considera que todas las peticiones son satisfechas por el sistema de memoria y no por otras caches.''}}. Por lo tanto, se tardará el mismo número de ciclos que cuando se leen datos privados, es decir, 26. 
+El siguiente paso es repetir el proceso anterior, pero con los datos compartidos. La lectura de este tipo de datos no tiene mucha complicación, ya que, según el enunciado, se lleva a cabo siempre desde memoria principal\footnote{\textit{``Considera que todas las peticiones son satisfechas por el sistema de memoria y no por otras caches.''}}. Por lo tanto, se tardará el mismo número de ciclos que cuando se leen datos privados, es decir, 26.\\
 
-Ciclos:
+Ciclos en caso de fallo:
 \begin{itemize}
 \item 24 ciclos para llevar la dirección a memoria, que esta responda y traer l primera mitad del bloque.
 \item 2 ciclos para traer la segunda mitad del bloque a caché.
@@ -163,6 +163,8 @@ CPI_{lec.com}&=0.04\cdot (0.05\cdot (26))=0.052\text{ CPI}
 \end{align*}
 
 En cuanto a la escritura de datos compartidos, tenemos que tener en cuenta la política de escritura. Como la estrategia de escritura es \textbf{escritura inmediata} y \textit{carga en escritura}, cuando escribamos en caché, aunque sea un acierto, tendremos que escribir el dato en memoria principal, para lo cual consumiremos 2 ciclo de procesador. Cuando se produzca un fallo en la escritura, además tendremos que tener en cuenta los ciclos que se tarde en leer de memoria, 26. En este caso, tendremos que multiplicar los ciclos extra en caso de acierto por la tasa de acierto, y los ciclos extra en caso de fallo por la tasa de fallo. El protocolo de coherencia no se tiene en cuenta en este caso (ya que la memoria va a ser escrita y cualquier procesador va a tomar el dato compartido de ahí). \\
+
+\pagebreak
 
 Ciclos en caso de acierto:
 \begin{itemize}
@@ -197,7 +199,7 @@ Ahora, podemos sustituir en $(2)$:
 CPI_{datos}=0.551+0.085=0.636\text{ CPI}
 \end{equation*}
 
-Por último, sólo queda calcular $CPI_{instrucciones}$. En caso de que no se encuentre la instrucción en la caché correspondiente, se tendrá que buscar en la memoria principal, igual que hacíamos cuando leíamos un dato. Esto podría hacernos pensar que el número de ciclos que esto requiere es igual que en esos casos. Sin embargo, como las instrucciones son de 32 bits y el bus de direcciones soporta esos 32 bits, no será necesario hacer dos veces el camino para traer la dirección completa. En consecuencia, sólo se consume un ciclo de bus (2 de procesador) para solicitar y traer una instrucción (más los 24 que tarda la memoria en responder). No obstante, estos ciclos se incluyen dentro de la los 24 de la respuesta de la memoria:\\
+Por último, sólo queda calcular $CPI_{instrucciones}$. En caso de que no se encuentre la instrucción en la caché correspondiente, se tendrá que buscar en la memoria principal, igual que hacíamos cuando leíamos un dato. Esto podría hacernos pensar que el número de ciclos que esto requiere es igual que en esos casos. Sin embargo, como las instrucciones son de 32 bits y el bus de direcciones soporta esos 32 bits, no será necesario hacer dos veces el camino para traer la dirección completa. En consecuencia, sólo se consume un ciclo de bus (2 de procesador) para solicitar y traer una instrucción (más los 24 que tarda la memoria en responder). No obstante, estos dos ciclos se incluyen dentro de la los 24 de la respuesta de la memoria:\\
 
 Ciclos en caso de fallo:
 \begin{itemize}
@@ -237,62 +239,128 @@ Ignora la contención en el bus y los mensajes de coherencia recibidos desde otr
 
 \subsubsection{Solución}
 
-Para responder a la pregunta tenemos que repetir el procedimiento anterior, es decir, calcular el $CPI$ de cada cosa, después el uso que haría un solo procesador del bus y, por último, lo que nos piden. Pasemos, por tanto, a estudiar la lectura de datos privados:
+Para responder a la pregunta tenemos que repetir el procedimiento anterior, es decir, calcular el $CPI$ de cada cosa, después el uso que haría un solo procesador del bus y, por último, lo que nos piden. Pasemos, por tanto, a estudiar la lectura de datos privados:\\
 
-Si un dato (privado o compartido) se encuentra en caché, no habrá penalización, ya que se tardaría un ciclo en pedir el dato y otro ciclo en mandarlo al procesador, que es igual a dos, lo que coincide con el $CPI_{ideal}$. Esto es así porque, según el enunciado, consideramos que las peticiones no son satisfechas por otras cachés. Es decir, suponemos que la caché local contiene la versión más actualizada del dato. En caso de fallo, tendríamos que tener en cuenta que existe una probabilidad del $30\%$ de reemplazar un bloque modificado. Como tenemos una política de \textit{postescritura}, cuando esto ocurra tendríamos que escribir el bloque modificado en memoria principal. En consecuencia, además de los 34 CPI extra que supone la lectura en memoria (lo hemos calculado en el primer apartado), hay que sumar los debidos a \textit{postescritura}. Como también demostramos en el primer apartado, llevar el bloque que se quiere escribir a memoria genera 4 ciclos (de procesador) adicionales, pues tenemos que llevar la mitad del bloque en un ciclo de bus y la otra mitad en el ciclo de bus siguiente. Por lo tanto, tendremos que añadir a nuestra ecuación este número de ciclos multiplicado por la probabilidad de que se reemplace un bloque modificado:
+Si un dato (privado o compartido) se encuentra en caché, no habrá penalización, ya que se tardaría un ciclo en pedir el dato y otro ciclo en mandarlo al procesador, que es igual a dos, lo que coincide con el $CPI_{ideal}$. Esto es así porque, según el enunciado, consideramos que las peticiones no son satisfechas por otras cachés. En caso de fallo, tendríamos que tener en cuenta que existe una probabilidad del $30\%$ de reemplazar un bloque modificado. Como tenemos una política de \textit{postescritura}, cuando esto ocurra tendríamos que escribir el bloque modificado en memoria principal. En consecuencia, además de los 26 CPI extra que supone la lectura en memoria (lo hemos calculado en el primer apartado), hay que sumar los debidos a \textit{postescritura}. Al contrario que con la \textit{escritura inmediata}, en \textit{postescritura} tenemos que escribir en memoria el bloque entero, lo que genera 4 ciclos (de procesador) adicionales, pues tenemos que llevar la mitad del bloque en un ciclo de bus y la otra mitad en el ciclo de bus siguiente. Por lo tanto, tendremos que añadir a nuestra ecuación este número de ciclos multiplicado por la probabilidad de que se reemplace un bloque modificado:\\
+
+Ciclos en caso de fallo:
+\begin{itemize}
+\item 24 ciclos para llevar la dirección a memoria, que esta responda y traer la primera mitad del bloque.
+\item 2 ciclos para traer la segunda mitad del bloque a caché.
+\item 4 ciclos de postescritura.
+\end{itemize}
+
+Porcentajes:
+\begin{itemize}
+\item 0.3 de probabilidad de reemplazo de un bloque modificado.
+\item 0.03 de tasa de fallo.
+\item 0.35 del porcentaje de instrucciones de este tipo en el global.
+\end{itemize}
+
 \begin{align*}
-CPI_{lec.priv}&=0.35\cdot (0.03\cdot (34 + 0.3\cdot 4))=0.3696\text{ CPI}
+CPI_{lec.priv}&=0.35\cdot (0.03\cdot (26 + 0.3\cdot 4))=0.2856\text{ CPI}
 \end{align*}
 
-En cuanto a la escritura de datos privados, en caso de acierto no tenemos que escribir el bloque en memoria al mismo tiempo, por lo que en esta situación no utilizamos el bus y no supone una penalización. En caso de fallo, sin embargo, tenemos que traer el bloque de memoria a caché y escribirlo, debido a la política de \textit{carga en escritura}. Por lo tanto, se usará el bus para traer dicho bloque a caché y, en caso de que se reemplace por un bloque modificado, para escribir dicho bloque en memoria. En el apartado anterior vimos que leer un bloque de memoria a caché lleva 34 ciclos. Y acabamos de ver también que escribir un bloque modificado genera 4 ciclos. \textcolor{red}{Por último, tenemos que tener en cuenta el ciclo que requiere el escribir el bloque en caché, una vez que se ha traído de memoria}. Por lo tanto, la ecuación resultante sería la siguiente:
+En cuanto a la escritura de datos privados, en caso de acierto no tenemos que escribir el bloque en memoria al mismo tiempo, por lo que en esta situación no utilizamos el bus y no supone una penalización. En caso de fallo, sin embargo, tenemos que traer el bloque de memoria a caché y escribirlo, debido a la política de \textit{carga en escritura}. Por lo tanto, se usará el bus para traer dicho bloque a caché y, en caso de que se reemplace por un bloque modificado, para escribir dicho bloque en memoria. En el apartado anterior vimos que leer un bloque de memoria a caché lleva 26 ciclos. Y acabamos de ver también que escribir un bloque modificado genera 4 ciclos.\\
+
+Ciclos en caso de fallo:
+\begin{itemize}
+\item 24 ciclos para llevar la dirección a memoria, que esta responda y traer la primera mitad del bloque.
+\item 2 ciclos para traer la segunda mitad del bloque a caché.
+\item 4 ciclos para escribir el bloque reemplazado en memoria.
+\end{itemize}
+
+Porcentajes:
+\begin{itemize}
+\item 0.3 de probabilidad de reemplazo del bloque modificado.
+\item 0.03 de tasa de fallo.
+\item 0.1 del porcentaje de instrucciones de este tipo en el global.
+\end{itemize}
+
+Por lo tanto, la ecuación resultante sería la siguiente:
 \begin{align*}
-CPI_{esc.priv}&=0.1\cdot (0.03\cdot (34+0.3\cdot 4))=0.1056\text{ CPI}
+CPI_{esc.priv}&=0.1\cdot (0.03\cdot (26+0.3\cdot 4))=0.0816\text{ CPI}
 \end{align*}
 
-Sustituyendo los valores recién obtenidos en $(3)$, tenemos:
+Sustituyendo los valores recién obtenidos en $(4)$, tenemos:
 \begin{align*}
-CPI_{privados}=0.3696+0.1056=0.4752 \text{ CPI}
+CPI_{privados}=0.2856+0.0816=0.3672 \text{ CPI}
 \end{align*}
 
-Pasemos ahora a estudiar los datos compartidos. Respecto a la lectura de los mismos, al igual que dijimos con los datos privados, no se generaría tráfico en el bus de memoria, ya que el enunciado nos dice que las lecturas de datos no son satisfechas por otras cachés (\textcolor{red}{¿Haría falta comprobar si el dato más reciente está en memoria?}). En caso de fallo, la situación también sería igual que con los datos privados, ya que llevaría 34 ciclos traer el dato de memoria y 4 ciclos escribir bloques modificados en la misma (con una probabilidad de 0.3 de que ocurra esto)(\textcolor{red}{¿Habría que actualizar en otras cachés en caso de que dicho bloque tenga datos compartidos?}).
+Pasemos ahora a estudiar los datos compartidos. Respecto a la lectura de los mismos, al igual que dijimos con los datos privados, no se generaría tráfico en el bus de memoria, ya que el enunciado nos dice que las lecturas de datos no son satisfechas por otras cachés\footnote{Como en el enunciado no se indica nada, suponemos que la versión más reciente del dato está en nuestra caché}. En caso de fallo, la situación también sería igual que con los datos privados, ya que llevaría 26 ciclos traer el dato de memoria y 4 ciclos escribir bloques modificados en la misma\footnote{Como no se especifica, y para simplificar, suponemos que el bloque reemplazado no contiene datos compartidos} (con una probabilidad de 0.3 de que ocurra esto).\\
+
+Ciclos en caso de fallo:
+\begin{itemize}
+\item 24 ciclos para llevar la dirección a memoria, que esta responda y traer la primera mitad del bloque.
+\item 2 ciclos para traer la segunda mitad del bloque a caché.
+\item 4 ciclos de postescritura.
+\end{itemize}
+
+Porcentajes:
+\begin{itemize}
+\item 0.3 de probabilidad de reemplazo de un bloque modificado.
+\item 0.05 de tasa de fallo.
+\item 0.04 del porcentaje de instrucciones de este tipo en el global.
+\end{itemize}
+
 \begin{align*}
-CPI_{lec.com}&=0.04\cdot (0.05\cdot (34 + 0.3\cdot 4))=0.0704\text{ CPI}
+CPI_{lec.com}&=0.04\cdot (0.05\cdot (26 + 0.3\cdot 4))=0.0544\text{ CPI}
 \end{align*}
 
-En cuanto a la escritura de datos compartidos, en caso de acierto, no bastará con escribir en caché solamente. También se genera una transacción de invalidación, que requiere dos ciclos de procesador (\textcolor{red}{¿Habría que tener en cuenta también el protocolo de coherencia?}). En caso de fallo, habría que traer el bloque de memoria y escribirlo. Leer un bloque de memoria conlleva 34 ciclos de procesador (el ciclo usado para escribir en caché no usa el bus, por lo que no lo tenemos en cuenta). La transacción de invalidación generaría dos ciclos de procesador más. También hay que tener en cuenta que se puede reemplazar un bloque que esté modificado, por lo que habría que escribirlo en memoria. Esto último, hemos visto que genera 4 ciclos extra. Por último, tenemos que contar los 4 ciclos de procesador debidos al protocolo de coherencia, que contarán tanto si hay fallos como si hay aciertos en caché. Condensando todo lo anterior en una ecuación, nos quedaría algo tal que así:
+En cuanto a la escritura de datos compartidos, en caso de acierto, no bastará con escribir en caché solamente. También se genera una transacción de invalidación (ya que en este caso no escribimos al mismo tiempo en memoria), que requiere dos ciclos de procesador. En caso de fallo, habría que traer el bloque de memoria y escribirlo. Leer un bloque de memoria conlleva 26 ciclos de procesador (el ciclo usado para escribir en caché no usa el bus, por lo que no lo tenemos en cuenta). La transacción de invalidación generaría dos ciclos de procesador más. También hay que tener en cuenta que se puede reemplazar un bloque que esté modificado, por lo que habría que escribirlo en memoria. Esto último, hemos visto que genera 4 ciclos extra.\\ 
+
+Ciclos en caso de acierto:
+\begin{itemize}
+\item 2 para invalidar los bloques en otras cachés.
+\end{itemize}
+
+Ciclos en caso de fallo:
+\begin{itemize}
+\item 26 ciclos para leer el bloque de memoria (\textit{carga en escritura}).
+\item 2 para invalidar los bloques en otras cachés.
+\item 4 ciclos en escribir un bloque reemplazado
+\end{itemize}
+
+Porcentajes:
+\begin{itemize}
+\item 0.3 de la probabilidad de reemplazo.
+\item 0.95 de tasa de acierto.
+\item 0.05 de tasa de fallo.
+\item 0.01 del porcentaje de instrucciones de este tipo en el global.
+\end{itemize}
+
+Condensando todo lo anterior en una ecuación, nos quedaría algo tal que así:
 \begin{align*}
-CPI_{esc.com}&=0.01\cdot (0.95\cdot (2) + 0.05\cdot (34+2+0.3\cdot 4)+4)=0.0776\text{ CPI}
+CPI_{esc.com}&=0.01\cdot (0.95\cdot (2) + 0.05\cdot (28+0.3\cdot 4))=0.0336\text{ CPI}
 \end{align*}
 
-Sustituyendo estos valores en $(4)$, tenemos:
+Sustituyendo estos valores en $(5)$, tenemos:
 \begin{align*}
-CPI_{compartidos}=0.0704+0.0776=0.148 \text{ CPI}
+CPI_{compartidos}=0.0554+0.0336=0.089 \text{ CPI}
 \end{align*}
 
-Ahora, podemos sustituir en $(2)$:
+Ahora, podemos sustituir en $(3)$:
 \begin{equation*}
-CPI_{datos}=0.4752+0.148=0.6232\text{ CPI}
+CPI_{datos}=0.3672+0.089=0.4562\text{ CPI}
 \end{equation*}
 
-En cuanto a las instrucciones, el razonamiento es exactamente igual que en el primer apartado, por lo que podemos usar directamente el resultado obtenido antes en $(1)$:
-Teniendo este dato, ya podemos sustituir en $(1)$:
+En cuanto a las instrucciones, el razonamiento es exactamente igual que en el primer apartado, por lo que podemos usar directamente el resultado obtenido antes en $(2)$:
+Teniendo este dato, ya podemos sustituir en $(2)$:
 \begin{equation*}
-CPI_{extra}=0.6232+0.39=1.0132\text{ CPI}
+CPI_{extra}=0.4562+0.36=0.8162\text{ CPI}
 \end{equation*}
 
 A continuación, tenemos que sumar este resultado al $CPI_{ideal}$ para conocer el $CPI_{total}$:
 \begin{equation*}
-CPI_{total}=CPI_{ideal}+CPI_{extra}=2+1.0132=3.0132\text{ CPI}
+CPI_{total}=CPI_{ideal}+CPI_{extra}=2+0.8162=2.8162\text{ CPI}
 \end{equation*}
 
 Una vez conocidos $CPI_{total}$ y $CPI_{extra}$, sólo queda hacer una división para conocer el uso que hace el procesador del bus:
 \begin{align*}
 \text{Uso}&=\frac{CPI_{extra}}{CPI_{total}}\\
-\text{Uso}&=\frac{1.0132}{3.0132} = 0.331 = 33.6\%
+\text{Uso}&=\frac{0.8162}{2.8162} = 0.2898 = 28.98\%
 \end{align*}
 
-Con este porcentaje de uso por parte de un solo procesador, el bus se saturaría al poner 3, ya que $33.6\cdot 3=100.8\%$. Por lo tanto, con estas políticas habría que utilizar dos procesadores para aprovechar el bus al máximo sin que se llegue a saturar.
+A pesar de que hemos mejorado la eficiencia en el uso del bus, si pusieramos 4 procesadores seguiríamos excediendo el umbral del 100\%, ya que $28.98\cdot 4=115.92\%$. Por lo tanto, con estas políticas habría que utilizar 3 procesadores para aprovechar el bus al máximo sin que se llegue a saturar.
 
-\bibliographystyle{apacite}
-\bibliography{referencias}
 \end{document}
